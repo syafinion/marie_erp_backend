@@ -9,7 +9,26 @@ class Ingredient extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'is_checked'];
+    protected $fillable = [
+        'category_id',
+        'name',
+        'is_checked',
+        'measurement',
+        'is_loose',
+        'is_carton',
+        'is_bag',
+        'package_weight',
+        'unit_price',
+        'storage_location',
+        'barcode', // Add barcode to fillable
+    ];
+
+    protected $casts = [
+        'is_checked' => 'boolean',
+        'is_loose' => 'boolean',
+        'is_carton' => 'boolean',
+        'is_bag' => 'boolean',
+    ];
 
     public function category()
     {
