@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Ingredient; 
 use App\Models\Stock;
 
 class StockController extends Controller
@@ -79,5 +80,70 @@ class StockController extends Controller
 
         return response()->json($response);
     }
+
+    public function manageStock(Request $request)
+{
+    // Log the incoming request for debugging
+    \Log::info('manageStock called', $request->all());
+
+    // Validate the request
+    $validatedData = $request->validate([
+        'ingredient_id' => 'required|exists:ingredients,id',
+        'type' => 'required|in:in,out', // 'in' for stock in, 'out' for stock out
+        'quantity' => 'required|integer|min:1', // Quantity must be positive
+        'remarks' => 'nullable|string', // Remarks are optional
+        'user_id' => 'nullable|exists:users,id', // User ID is optional
+    ]);
+
+    try {
+        // Prepare stock data
+        $stockData = [
+            'ingredient_id' => $validatedData['ingredient_id'],
+            'stock_in' => $validatedData['type'] === 'in' ? $validatedData['quantity'] : 0,
+            'stock_out' => $validatedData['type'] === 'out' ? $validatedData['quantity'] : 0,
+            'remarks' => $validatedData['remarks'] ?? null,
+            'user_id' => $validatedData['user_id'] ?? null,
+        ];
+
+        // Log the stock data before creation
+        \Log::info('Stock data prepared for creation:', $stockData);
+
+        // Create the stock record
+        $stock = Stock::create($stockData);
+        \Log::info('Stock record created successfully', ['stock' => $stock]);
+
+        // Update the ingredient's package weight
+        $ingredient = Ingredient::findOrFail($validatedData['ingredient_id']);
+        if ($validatedData['type'] === 'in') {
+            $ingredient->package_weight += $validatedData['quantity'];
+        } elseif ($validatedData['type'] === 'out') {
+            if ($ingredient->package_weight < $validatedData['quantity']) {
+                \Log::warning('Insufficient stock for transaction', [
+                    'current_weight' => $ingredient->package_weight,
+                    'requested_quantity' => $validatedData['quantity'],
+                ]);
+                return response()->json([
+                    'message' => 'Insufficient stock for this transaction.',
+                ], 400);
+            }
+            $ingredient->package_weight -= $validatedData['quantity'];
+        }
+        $ingredient->save();
+
+        \Log::info('Ingredient updated successfully', ['ingredient' => $ingredient]);
+
+        return response()->json([
+            'message' => 'Stock transaction recorded and quantity updated successfully.',
+            'ingredient' => $ingredient,
+            'stock' => $stock,
+        ], 201);
+    } catch (\Exception $e) {
+        \Log::error('Failed to record stock transaction', ['error' => $e->getMessage()]);
+        return response()->json([
+            'message' => 'Failed to record stock transaction.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
 }
 
+}

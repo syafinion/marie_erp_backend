@@ -39,6 +39,10 @@ Route::post('stocks/edit', [StockController::class, 'editStock']);
 Route::post('stocks/delete', [StockController::class, 'deleteStock']);
 Route::post('stocks/selectingStock', [StockController::class, 'selectStock']);
 Route::post('stocks/downloadApp', [StockController::class, 'downloadStockCard']);
+Route::post('stocks/manage', [StockController::class, 'manageStock']);
+
+Route::post('/ingredient/find-by-barcode', [IngredientController::class, 'findIngredientByBarcode']);
+
 
 // Example of an authenticated route using Sanctum (optional, if using Sanctum for user authentication)
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

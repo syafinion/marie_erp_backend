@@ -21,6 +21,7 @@ class Ingredient extends Model
         'unit_price',
         'storage_location',
         'barcode', // Add barcode to fillable
+        'item_code',
     ];
 
     protected $casts = [

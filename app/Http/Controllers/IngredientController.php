@@ -9,70 +9,114 @@ use App\Models\Category;
 class IngredientController extends Controller
 {
     public function listIngredients(Request $request)
-{
-    info('Full Request Body:', $request->all());
-    $category = $request->input('category');
-
-    // Log the incoming request
-    info('Incoming request to listIngredients', ['category' => $category]);
-
-    // Validate if the category exists
-    if (!$category || !is_string($category)) {
-        info('Category is missing or invalid in the request');
-        return response()->json(['message' => 'Category is required'], 400);
-    }
-
-    // Trim and standardize category name
-    $category = trim($category);
-
-    // Fetch category from the database
-    $matchedCategory = Category::where('name', $category)->first();
-
-    if (!$matchedCategory) {
-        info('Category not found in the database', ['category' => $category]);
-        return response()->json(['message' => 'Category not found'], 404);
-    }
-
-    // Fetch ingredients for the matched category
-    $ingredients = Ingredient::where('category_id', $matchedCategory->id)
-        ->get();
-
-    // Check if ingredients exist
-    if ($ingredients->isEmpty()) {
-        info('No ingredients found for the category', ['category' => $category]);
-        return response()->json(['message' => 'No ingredients found'], 404);
-    }
-
-    // Format the ingredients
-    $formattedIngredients = $ingredients->map(function ($ingredient) {
-        return [
-            'ingredient' => $ingredient->name,
-            'ingredientId' => $ingredient->id,
-            'isChecked' => $ingredient->is_checked,
-            'measurement' => $ingredient->measurement,
-            'isLoose' => $ingredient->is_loose,
-            'isCarton' => $ingredient->is_carton,
-            'isBag' => $ingredient->is_bag,
-            'packageWeight' => $ingredient->package_weight,
-            'unitPrice' => $ingredient->unit_price,
-            'storageLocation' => $ingredient->storage_location,
-        ];
-    })->toArray();
-
-    // Return structured response
-    $response = [
-        'data' => [
-            'categoryListing' => [
-                $matchedCategory->name => $formattedIngredients,
+    {
+        info('Full Request Body:', $request->all());
+        $category = $request->input('category');
+    
+        // Log the incoming request
+        info('Incoming request to listIngredients', ['category' => $category]);
+    
+        // Validate if the category exists
+        if (!$category || !is_string($category)) {
+            info('Category is missing or invalid in the request');
+            return response()->json(['message' => 'Category is required'], 400);
+        }
+    
+        // Trim and standardize category name
+        $category = trim($category);
+    
+        // Fetch category from the database
+        $matchedCategory = Category::where('name', $category)->first();
+    
+        if (!$matchedCategory) {
+            info('Category not found in the database', ['category' => $category]);
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+    
+        // Fetch ingredients for the matched category
+        $ingredients = Ingredient::where('category_id', $matchedCategory->id)->get();
+    
+        // Check if ingredients exist
+        if ($ingredients->isEmpty()) {
+            info('No ingredients found for the category', ['category' => $category]);
+            return response()->json(['message' => 'No ingredients found'], 404);
+        }
+    
+        // Format the ingredients
+        $formattedIngredients = $ingredients->map(function ($ingredient) {
+            return [
+                'ingredient' => $ingredient->name,
+                'ingredientId' => $ingredient->id,
+                'isChecked' => $ingredient->is_checked,
+                'measurement' => $ingredient->measurement,
+                'isLoose' => $ingredient->is_loose,
+                'isCarton' => $ingredient->is_carton,
+                'isBag' => $ingredient->is_bag,
+                'packageWeight' => $ingredient->package_weight,
+                'unitPrice' => $ingredient->unit_price,
+                'storageLocation' => $ingredient->storage_location,
+                'barcode' => $ingredient->barcode, // Add barcode here
+            ];
+        })->toArray();
+    
+        // Return structured response
+        $response = [
+            'data' => [
+                'categoryListing' => [
+                    $matchedCategory->name => $formattedIngredients,
+                ],
             ],
-        ],
-    ];
-
-    info('Fetched ingredients successfully', ['response' => $response]);
-
-    return response()->json($response, 200);
-}
-
+        ];
+    
+        info('Fetched ingredients successfully', ['response' => $response]);
+    
+        return response()->json($response, 200);
+    }
+    
+    public function findIngredientByBarcode(Request $request)
+    {
+        $barcode = $request->input('barcode');
+    
+        // Log the incoming request
+        \Log::info('findIngredientByBarcode called', ['barcode' => $barcode]);
+    
+        // Validate the request input
+        if (!$barcode || !is_string($barcode)) {
+            \Log::warning('Invalid or missing barcode', ['barcode' => $barcode]);
+            return response()->json(['message' => 'Barcode is required'], 400);
+        }
+    
+        // Search for the ingredient with the provided barcode
+        $ingredient = Ingredient::where('barcode', $barcode)->first();
+    
+        if (!$ingredient) {
+            \Log::warning('Ingredient not found for barcode', ['barcode' => $barcode]);
+            return response()->json(['message' => 'Ingredient not found'], 404);
+        }
+    
+        // Format the response with ingredient details
+        $response = [
+            'data' => [
+                'ingredientId' => $ingredient->id,
+                'ingredient' => $ingredient->name,
+                'barcode' => $ingredient->barcode,
+                'measurement' => $ingredient->measurement,
+                'unitPrice' => $ingredient->unit_price,
+                'storageLocation' => $ingredient->storage_location,
+                'category' => $ingredient->category->name ?? null, // Include category name if available
+                'isChecked' => $ingredient->is_checked,
+                'isLoose' => $ingredient->is_loose,
+                'isCarton' => $ingredient->is_carton,
+                'isBag' => $ingredient->is_bag,
+                'packageWeight' => $ingredient->package_weight,
+            ],
+        ];
+    
+        \Log::info('Ingredient found for barcode', ['response' => $response]);
+    
+        return response()->json($response, 200);
+    }
+    
 
 public function updateIngredientBarcode(Request $request)
 {
@@ -125,7 +169,7 @@ public function createIngredient(Request $request)
         return response()->json(['message' => 'Category not found'], 404);
     }
 
-    // Create or update the ingredient with new fields
+    // Create or update the ingredient with new fields, including barcode and item_code
     $ingredient = Ingredient::updateOrCreate(
         [
             'name' => $data['ingredient'],
@@ -140,6 +184,8 @@ public function createIngredient(Request $request)
             'package_weight' => $data['packageWeight'] ?? null,
             'unit_price' => $data['unitPrice'] ?? null,
             'storage_location' => $data['storageLocation'] ?? null,
+            'barcode' => $data['barcode'] ?? null, // Existing barcode field
+            'item_code' => $data['itemCode'] ?? null, // New item_code field added here
         ]
     );
 
@@ -148,6 +194,8 @@ public function createIngredient(Request $request)
         'ingredientId' => $ingredient->id, // Return the ingredient ID
     ], 200);
 }
+
+
 
 
 
