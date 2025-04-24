@@ -27,12 +27,14 @@ Route::get('/categories', [CommonController::class, 'getCategories']);
 Route::put('/ingredient/{id}', [CommonController::class, 'updateIngredient']);
 // api.php
 Route::post('update-ingredient-barcode', [IngredientController::class, 'updateIngredientBarcode']);
-
+Route::get('/storage-locations', [IngredientController::class, 'listLocations']);
+Route::post('/storage-locations', [ IngredientController::class, 'addLocation' ]);
 
 Route::post('ingredientsList', [IngredientController::class, 'listIngredients']);
 Route::post('createIngredient', [IngredientController::class, 'createIngredient']);
 Route::post('editIngredient', [IngredientController::class, 'editIngredient']);
 Route::post('storeIngredients', [IngredientController::class, 'saveIngredients']);
+Route::post('delete-by-barcode', [IngredientController::class,'deleteByBarcode']);
 Route::post('stocks/list', [StockController::class, 'listStocks']);
 Route::post('stocks/create', [StockController::class, 'createStock']);
 Route::post('stocks/edit', [StockController::class, 'editStock']);

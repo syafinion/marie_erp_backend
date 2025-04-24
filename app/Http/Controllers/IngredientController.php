@@ -197,8 +197,42 @@ public function createIngredient(Request $request)
 
 
 
+public function deleteByBarcode(Request $request)
+{
+    $barcode = $request->input('barcode');
+    if (!$barcode) {
+        return response()->json(['message'=>'Barcode required'], 400);
+    }
 
+    $ingredient = Ingredient::where('barcode', $barcode)->first();
+    if (!$ingredient) {
+        return response()->json(['message'=>'Not found'], 404);
+    }
 
+    $ingredient->delete();
+    return response()->json(['message'=>'Deleted'], 200);
+}
+
+public function listLocations(Request $request)
+{
+    $locations = Ingredient::whereNotNull('storage_location')
+        ->pluck('storage_location')
+        ->unique()
+        ->values();
+    return response()->json($locations, 200);
+}
+
+public function addLocation(Request $req)
+{
+    $loc = trim($req->input('location'));
+    if(!$loc) return response()->json(['message'=>'No location provided'], 400);
+
+    // upsert so duplicates don’t blow up
+    \DB::table('ingredients')
+      ->updateOrInsert(['storage_location' => $loc], ['storage_location' => $loc]);
+
+    return response()->json(['message'=>'Location saved'], 200);
+}
 
 public function editIngredient(Request $request)
 {
