@@ -104,69 +104,67 @@ class StockController extends Controller
     }
 
     public function manageStock(Request $request)
-    {
-        // Log the incoming request for debugging
-        \Log::info('manageStock called', $request->all());
-    
-        // 1. Validate
-        $validated = $request->validate([
-            'ingredient_id' => 'required|exists:ingredients,id',
-            'type'          => 'required|in:in,out',
-            'quantity'      => 'required|integer|min:1',
-            'plan_to_buy'   => 'nullable|integer|min:0',
-            'price_per_unit'=> 'nullable|numeric|min:0',
-            'remarks'       => 'nullable|string',
-            'user_id'       => 'nullable|exists:users,id',
-        ]);
-    
-        // 2. Fetch ingredient
-        $ingredient = Ingredient::findOrFail($validated['ingredient_id']);
-    
-        // 3. Figure out in / out quantities
-        $stockIn  = ($validated['type'] === 'in')  ? $validated['quantity'] : 0;
-        $stockOut = ($validated['type'] === 'out') ? $validated['quantity'] : 0;
-    
-        // 4. Get previous closing_stock (or zero if none)
-        $lastStock = Stock::where('ingredient_id', $ingredient->id)
-                          ->orderBy('created_at', 'desc')
-                          ->first();
-        $previousClosing = $lastStock ? $lastStock->closing_stock : 0;
-    
-        // 5. Compute new closing stock and consumption
-        $closingStock = $previousClosing + $stockIn - $stockOut;
-        $consumption  = $stockOut; // assume consumption == outflow
-    
-        // 6. Build payload including your new fields
-        $stockData = [
-            'ingredient_id'   => $ingredient->id,
-            'stock_in'        => $stockIn,
-            'stock_out'       => $stockOut,
-            'plan_to_buy'     => $validated['plan_to_buy']   ?? 0,
-            'price_per_unit'  => $validated['price_per_unit'] ?? 0,
-            'consumption'     => $consumption,
-            'closing_stock'   => $closingStock,
-            'remarks'         => $validated['remarks']       ?? null,
-            'user_id'         => $validated['user_id']       ?? null,
-        ];
-    
-        // 7. Create the new Stock record
-        $stock = Stock::create($stockData);
-        \Log::info('Stock record created', ['stock' => $stock]);
-    
-        // 8. Persist the new package_weight back on Ingredient
-        $ingredient->package_weight = $closingStock;
-        $ingredient->save();
-        \Log::info('Ingredient package_weight updated', [
-          'ingredient_id' => $ingredient->id,
-          'new_weight'    => $closingStock
-        ]);
-    
+{
+    \Log::info('manageStock called', $request->all());
+
+    $validated = $request->validate([
+        'ingredient_id'   => 'required|exists:ingredients,id',
+        'type'            => 'required|in:in,out',
+        'quantity'        => 'required|integer|min:1',
+        'plan_to_buy'     => 'nullable|integer|min:0',
+        'price_per_unit'  => 'nullable|numeric|min:0',
+        'remarks'         => 'nullable|string',
+        'user_id'         => 'nullable|exists:users,id',
+    ]);
+
+    $ingredient = Ingredient::findOrFail($validated['ingredient_id']);
+
+    // Get previous closing or zero
+    $lastStock       = Stock::where('ingredient_id', $ingredient->id)
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+    $previousClosing = $lastStock ? $lastStock->closing_stock : 0;
+
+    // Prevent stock-out > available
+    if ($validated['type'] === 'out' && $validated['quantity'] > $previousClosing) {
         return response()->json([
-            'message'    => 'Stock transaction recorded and quantity updated successfully.',
-            'ingredient' => $ingredient,
-            'stock'      => $stock,
-        ], 201);
+            'message' => 'Insufficient stock to perform this operation.'
+        ], 422);
     }
+
+    $stockIn  = $validated['type'] === 'in'  ? $validated['quantity'] : 0;
+    $stockOut = $validated['type'] === 'out' ? $validated['quantity'] : 0;
+
+    $closingStock = $previousClosing + $stockIn - $stockOut;
+    $consumption  = $stockOut;
+
+    $stockData = [
+        'ingredient_id'   => $ingredient->id,
+        'stock_in'        => $stockIn,
+        'stock_out'       => $stockOut,
+        'plan_to_buy'     => $validated['plan_to_buy']   ?? 0,
+        'price_per_unit'  => $validated['price_per_unit'] ?? 0,
+        'consumption'     => $consumption,
+        'closing_stock'   => $closingStock,
+        'remarks'         => $validated['remarks']       ?? null,
+        'user_id'         => $validated['user_id']       ?? null,
+    ];
+
+    $stock = Stock::create($stockData);
+
+    \Log::info('Stock record created', ['stock' => $stock]);
+
+    // Update Ingredient’s package_weight
+    $ingredient->package_weight = $closingStock;
+    $ingredient->save();
+
+    return response()->json([
+        'message'    => 'Stock transaction recorded and quantity updated successfully.',
+        'ingredient' => $ingredient,
+        'stock'      => $stock,
+    ], 201);
+}
+
     
 
 }

@@ -9,16 +9,23 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
-        $user = User::where('email', $request->email)->first();
+{
+    $user = User::where('email', $request->email)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            $token = bin2hex(random_bytes(40));  // Generate a token
-            $user->update(['token' => $token]);
+    if ($user && Hash::check($request->password, $user->password)) {
+        $token = bin2hex(random_bytes(40));
+        $user->update(['token' => $token]);
 
-            return response()->json(['token' => $token, 'userId' => $user->id]);
-        }
-
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json([
+          'token' => $token,
+          'user'  => [
+            'id'   => $user->id,
+            'name' => $user->name,   // ← include it
+          ],
+        ]);
     }
+
+    return response()->json(['message' => 'Invalid credentials'], 401);
+}
+
 }
