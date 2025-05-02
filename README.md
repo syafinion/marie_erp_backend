@@ -65,7 +65,6 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-
 ## Installation and Setup Instructions
 
 ### Prerequisites
@@ -74,6 +73,27 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 - Node.js and npm
 - MySQL
 - Git
+- XAMPP
+
+### Database Import via phpMyAdmin
+If you prefer to import the provided SQL dump rather than running migrations:
+
+1. Start XAMPP
+   - Open XAMPP Control Panel
+   - Click Start for both Apache and MySQL
+
+2. Create the database
+   - In your browser, go to: http://localhost/phpmyadmin
+   - Click New in the sidebar
+   - Enter Database name: marie-erp
+   - Choose utf8mb4_general_ci collation
+   - Click Create
+
+3. Import the SQL dump
+   - With the new marie-erp database selected, click the Import tab
+   - Click Choose File, select marie-erp.sql from your project folder
+   - Click Go and wait for the import to finish
+   - You should see a success message indicating all tables have been created and data has been loaded.
 
 ### Setup Steps for Windows
 
