@@ -121,7 +121,7 @@ npm run dev
 
 8. Start the development server:
 ```bash
-php artisan serve
+php artisan serve --host=0.0.0.0 --port=8000
 ```
 
 The application will be available at `http://localhost:8000`
