@@ -22,6 +22,7 @@ class Ingredient extends Model
         'storage_location',
         'barcode', // Add barcode to fillable
         'item_code',
+        'user_id',
     ];
 
     protected $casts = [
@@ -35,4 +36,9 @@ class Ingredient extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function user()
+   {
+       return $this->belongsTo(User::class);
+   }
 }

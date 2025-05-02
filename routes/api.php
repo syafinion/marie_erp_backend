@@ -42,6 +42,7 @@ Route::post('stocks/delete', [StockController::class, 'deleteStock']);
 Route::post('stocks/selectingStock', [StockController::class, 'selectStock']);
 Route::post('stocks/downloadApp', [StockController::class, 'downloadStockCard']);
 Route::post('stocks/manage', [StockController::class, 'manageStock']);
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/ingredient/find-by-barcode', [IngredientController::class, 'findIngredientByBarcode']);
 

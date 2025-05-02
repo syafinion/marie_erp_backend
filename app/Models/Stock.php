@@ -22,6 +22,7 @@ class Stock extends Model
         'processing_pct',
         'packaging_pct',
         'environment_pct',
+        'user_id',
     ];
 
     /**
@@ -31,4 +32,9 @@ class Stock extends Model
     {
         return $this->belongsTo(Ingredient::class);
     }
+
+    public function user()
+   {
+       return $this->belongsTo(User::class);
+   }
 }

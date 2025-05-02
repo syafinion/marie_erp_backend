@@ -47,6 +47,7 @@ class IngredientController extends Controller
             return [
                 'ingredient' => $ingredient->name,
                 'ingredientId' => $ingredient->id,
+                'userId' => $ingredient->user_id,
                 'isChecked' => $ingredient->is_checked,
                 'measurement' => $ingredient->measurement,
                 'isLoose' => $ingredient->is_loose,
@@ -99,6 +100,7 @@ class IngredientController extends Controller
             'data' => [
                 'ingredientId' => $ingredient->id,
                 'ingredient' => $ingredient->name,
+                'userId' => $ingredient->user_id,
                 'barcode' => $ingredient->barcode,
                 'measurement' => $ingredient->measurement,
                 'unitPrice' => $ingredient->unit_price,
@@ -183,6 +185,7 @@ public function createIngredient(Request $request)
             'is_bag' => $data['isBag'] ?? false,
             'package_weight' => $data['packageWeight'] ?? null,
             'unit_price' => $data['unitPrice'] ?? null,
+            'user_id' => $request->input('userId'),
             'storage_location' => $data['storageLocation'] ?? null,
             'barcode' => $data['barcode'] ?? null, // Existing barcode field
             'item_code' => $data['itemCode'] ?? null, // New item_code field added here
@@ -261,6 +264,7 @@ public function editIngredient(Request $request)
         'is_bag' => $data['isBag'] ?? $ingredient->is_bag,
         'package_weight' => $data['packageWeight'] ?? $ingredient->package_weight,
         'unit_price' => $data['unitPrice'] ?? $ingredient->unit_price,
+        'user_id' => $request->input('userId'),
         'storage_location' => $data['storageLocation'] ?? $ingredient->storage_location,
     ]);
 
@@ -269,16 +273,20 @@ public function editIngredient(Request $request)
 
 
 
-    public function saveIngredients(Request $request)
-    {
-        $ingredientsData = $request->input('data');
-        foreach ($ingredientsData as $ingredientData) {
-            Ingredient::updateOrCreate(
-                ['id' => $ingredientData['ingredientId']],
-                $ingredientData
-            );
-        }
+public function saveIngredients(Request $request)
+{
+    $userId = $request->input('userId');
+    $ingredientsData = $request->input('data', []);
 
-        return response()->json(['message' => 'Ingredients saved successfully']);
+    foreach ($ingredientsData as $ingredientData) {
+        $ingredientData['user_id'] = $userId;  // ← add this
+        Ingredient::updateOrCreate(
+            ['id' => $ingredientData['ingredientId']],
+            $ingredientData
+        );
     }
+
+    return response()->json(['message' => 'Ingredients saved successfully']);
+}
+
 }

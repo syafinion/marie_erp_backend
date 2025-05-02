@@ -37,12 +37,19 @@ class StockController extends Controller
 
 
 
-    public function createStock(Request $request)
-    {
-        $stock = Stock::create($request->all());
+public function createStock(Request $request)
+{
+    $data = $request->all();
+    $data['user_id'] = $request->input('userId');  // ← map camelCase userId → snake_case user_id
 
-        return response()->json(['message' => 'Stock created successfully', 'stock' => $stock]);
-    }
+    $stock = Stock::create($data);
+
+    return response()->json([
+      'message' => 'Stock created successfully',
+      'stock'   => $stock,
+    ]);
+}
+
 
     public function editStock(Request $request)
     {
@@ -121,9 +128,12 @@ class StockController extends Controller
 
     // Get previous closing or zero
     $lastStock       = Stock::where('ingredient_id', $ingredient->id)
-                            ->orderBy('created_at', 'desc')
-                            ->first();
-    $previousClosing = $lastStock ? $lastStock->closing_stock : 0;
+    ->orderBy('created_at', 'desc')
+    ->first();
+// FALL BACK TO THE INGREDIENT’S ORIGINAL PACKAGE_WEIGHT
+$previousClosing = $lastStock 
+? $lastStock->closing_stock 
+: (int) ($ingredient->package_weight ?? 0);
 
     // Prevent stock-out > available
     if ($validated['type'] === 'out' && $validated['quantity'] > $previousClosing) {
@@ -155,8 +165,8 @@ class StockController extends Controller
     \Log::info('Stock record created', ['stock' => $stock]);
 
     // Update Ingredient’s package_weight
-    $ingredient->package_weight = $closingStock;
-    $ingredient->save();
+    // $ingredient->package_weight = $closingStock;
+    // $ingredient->save();
 
     return response()->json([
         'message'    => 'Stock transaction recorded and quantity updated successfully.',
