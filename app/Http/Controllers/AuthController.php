@@ -1,5 +1,25 @@
 <?php
 
+/**
+ * Authentication Controller
+ * 
+ * @package MarieERP
+ * @author Group 17
+ * @version 1.0.0
+ * @created May 2024
+ * 
+ * This file is part of the MarieERP project, developed for Software Engineering course.
+ * 
+ * Libraries/Frameworks used:
+ * - Laravel Framework (MIT License)
+ * - Laravel Sanctum for API authentication
+ * 
+ * Code Attribution:
+ * - Written by: [Your Team Names]
+ * - Authentication logic adapted from Laravel's official authentication documentation
+ *   Source: https://laravel.com/docs/authentication
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\User;

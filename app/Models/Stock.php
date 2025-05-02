@@ -1,5 +1,54 @@
 <?php
 
+/*
+ * File: Stock.php
+ * Project: Marie ERP
+ * Created Date: March 2025
+ * 
+ * Copyright (c) 2025 Group 17
+ * 
+ * Authors:
+ * - Syafiq - Group 17
+ * 
+ * Description:
+ * Model representing stock transactions and inventory management in the Marie ERP system.
+ * Handles stock movements, planning, and wastage calculations using Eloquent ORM.
+ * 
+ * Features:
+ * - Stock in/out tracking
+ * - Purchase planning
+ * - Price per unit tracking
+ * - Consumption monitoring
+ * - Closing stock calculation
+ * - Wastage percentage tracking
+ *   - Processing waste
+ *   - Packaging waste
+ *   - Environmental waste
+ * 
+ * Database Fields:
+ * - ingredient_id: Foreign key to ingredients table
+ * - stock_in: Quantity added to inventory
+ * - stock_out: Quantity removed from inventory
+ * - plan_to_buy: Planned purchase quantity
+ * - price_per_unit: Cost per unit
+ * - consumption: Usage quantity
+ * - closing_stock: Remaining stock
+ * - remarks: Transaction notes
+ * - user_id: Foreign key to users table
+ * - processing_pct: Processing wastage percentage
+ * - packaging_pct: Packaging wastage percentage
+ * - environment_pct: Environmental wastage percentage
+ * 
+ * Relationships:
+ * - belongs to Ingredient
+ * - belongs to User
+ * 
+ * Modified/Adapted From:
+ * - Laravel Eloquent Model patterns
+ *   Source: https://laravel.com/docs/eloquent
+ */
+
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;

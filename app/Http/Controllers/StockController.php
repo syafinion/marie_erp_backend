@@ -1,5 +1,61 @@
 <?php
 
+/*
+ * File: StockController.php
+ * Project: Marie ERP
+ * Created Date: December 2025
+ * 
+ * Copyright (c) 2025 Group 17
+ * 
+ * Authors:
+ * Syafiq - Group 17
+ * 
+ * Description:
+ * Controller responsible for managing stock operations in the Marie ERP system.
+ * Handles inventory management, stock transactions, stock cards, and stock level tracking.
+ * Implements CRUD operations for stock management with detailed logging and validation.
+ * 
+ * Features:
+ * - Stock level tracking
+ * - Stock in/out transactions
+ * - Stock card generation
+ * - Inventory management
+ * - Stock planning (plan to buy)
+ * - Price per unit tracking
+ * - Stock consumption monitoring
+ * - Closing stock calculations
+ * 
+ * API Endpoints:
+ * - GET /stock/list - List stocks for an ingredient
+ * - POST /stock/create - Create new stock entry
+ * - PUT /stock/edit - Update stock record
+ * - DELETE /stock/delete - Delete stock record
+ * - POST /stock/manage - Manage stock in/out transactions
+ * - GET /stock/card/download - Download stock card report
+ * - GET /stock/select - Get selectable stock items
+ * 
+ * Dependencies:
+ * - Laravel Framework
+ * - Stock Model
+ * - Ingredient Model
+ * - Database migrations
+ * - Laravel Validation
+ * - Laravel Logging
+ * 
+ * Data Flow:
+ * - Validates incoming stock transactions
+ * - Checks stock availability
+ * - Updates stock levels
+ * - Maintains stock history
+ * - Calculates closing balances
+ * 
+ * Modified/Adapted From:
+ * - Laravel inventory management patterns
+ *   Source: https://laravel.com/docs/eloquent
+ * - Laravel validation practices
+ *   Source: https://laravel.com/docs/validation
+ */
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;

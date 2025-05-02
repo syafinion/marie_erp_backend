@@ -1,5 +1,50 @@
 <?php
 
+/*
+ * File: api.php
+ * Project: Marie ERP
+ * Created Date: March 2025
+ * 
+ * Copyright (c) 2025 Group 17
+ * 
+ * Authors:
+ * - Syafiq - Group 17
+ * 
+ * Description:
+ * API route definitions for the Marie ERP system.
+ * Defines all endpoints for authentication, ingredient management,
+ * stock management, and common data operations.
+ * 
+ * Route Groups:
+ * - Authentication Routes (/login, /register)
+ * - Ingredient Management Routes (/ingredients/*)
+ * - Stock Management Routes (/stocks/*)
+ * - Common Data Routes (/common, /categories)
+ * - Storage Location Routes (/storage-locations)
+ * 
+ * Protected Routes:
+ * - User data access (auth:sanctum middleware)
+ * 
+ * HTTP Methods Used:
+ * - GET: Data retrieval
+ * - POST: Data creation and complex queries
+ * - PUT: Data updates
+ * - DELETE: Data removal
+ * 
+ * Controllers Used:
+ * - AuthController: User authentication
+ * - CommonController: Shared functionality
+ * - IngredientController: Ingredient management
+ * - StockController: Stock management
+ * 
+ * Modified/Adapted From:
+ * - Laravel Routing documentation
+ *   Source: https://laravel.com/docs/routing
+ * - Laravel API Authentication
+ *   Source: https://laravel.com/docs/authentication
+ */
+
+ 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;

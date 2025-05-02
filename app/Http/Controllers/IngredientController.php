@@ -1,5 +1,50 @@
 <?php
 
+/*
+ * File: IngredientController.php
+ * Project: Marie ERP
+ * Created Date: December 2025
+ * 
+ * Copyright (c) 2024 Group 17
+ * 
+ * Authors:
+ * - Syafiq - Group 17
+ * 
+ * Description:
+ * Controller handling all ingredient-related operations in the Marie ERP system.
+ * Manages CRUD operations for ingredients, barcode management, storage locations,
+ * and ingredient categorization.
+ * 
+ * Features:
+ * - Ingredient listing with category filtering
+ * - Barcode scanning and management
+ * - Storage location tracking
+ * - Ingredient creation and updates
+ * - Category-based organization
+ * - Bulk ingredient updates
+ * 
+ * API Endpoints:
+ * - GET /ingredients/list - List ingredients by category
+ * - POST /ingredients/create - Create new ingredient
+ * - PUT /ingredients/edit - Update existing ingredient
+ * - DELETE /ingredients/delete - Delete ingredient by barcode
+ * - GET /ingredients/locations - List storage locations
+ * - POST /ingredients/barcode/update - Update ingredient barcode
+ * - GET /ingredients/barcode/find - Find ingredient by barcode
+ * 
+ * Dependencies:
+ * - Laravel Framework
+ * - Ingredient Model
+ * - Category Model
+ * - Database migrations
+ * 
+ * Modified/Adapted From:
+ * - Laravel Controller best practices
+ *   Source: https://laravel.com/docs/controllers
+ * - Laravel Eloquent ORM patterns
+ *   Source: https://laravel.com/docs/eloquent
+ */
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
