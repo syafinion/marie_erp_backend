@@ -1,5 +1,39 @@
 <?php
 
+/*
+ * File: SchemaAndFactoryTest.php
+ * Project: Marie ERP
+ * Created Date: March 2025
+ * 
+ * Copyright (c) 2025 Group 17
+ * 
+ * Authors:
+ * - Syafiq - Group 17
+ * 
+ * Description:
+ * Database schema and factory tests for the Marie ERP system.
+ * Validates database structure and tests model factories.
+ * 
+ * Test Categories:
+ * - Database Schema Validation
+ * - Factory Testing
+ * - Data Generation
+ * 
+ * Test Cases:
+ * - Core table existence
+ * - Factory record creation
+ * - Multiple record generation
+ * 
+ * Dependencies:
+ * - RefreshDatabase trait
+ * - Schema facade
+ * - Ingredient model
+ * 
+ * Modified/Adapted From:
+ * - Laravel Database Testing
+ *   Source: https://laravel.com/docs/database-testing
+ */
+
 namespace Tests\Feature;
 
 use Tests\TestCase;
