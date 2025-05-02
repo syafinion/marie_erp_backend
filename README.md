@@ -64,3 +64,69 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Installation and Setup Instructions
+
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- Node.js and npm
+- MySQL
+- Git
+
+### Setup Steps for Windows
+
+1. Clone the repository:
+```bash
+git clone [your-repository-url]
+cd MarieERP
+```
+
+2. Install PHP dependencies:
+```bash
+composer install
+```
+
+3. Copy the environment file:
+```bash
+copy .env.example .env
+```
+
+4. Generate application key:
+```bash
+php artisan key:generate
+```
+
+5. Configure your database in the .env file:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=marie_erp
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+6. Run database migrations:
+```bash
+php artisan migrate
+```
+
+7. Install NPM dependencies and compile assets:
+```bash
+npm install
+npm run dev
+```
+
+8. Start the development server:
+```bash
+php artisan serve
+```
+
+The application will be available at `http://localhost:8000`
+
+### Running Tests
+To run the automated tests:
+```bash
+php artisan test
